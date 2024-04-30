@@ -17,5 +17,10 @@ def test_pdf_to_images():
     """ Clean up"""
     shutil.rmtree(DATA_DIR / pdf_file_path.stem, ignore_errors=True)
 
+    pdf_file_path = DATA_DIR / "does_not_exist.pdf"
+    result = pdf_to_images(pdf_file_path, DATA_DIR)
 
-test_pdf_to_images()
+    assert "error" in result
+    assert result["error"] == f"PDF file {str(pdf_file_path)} does not exist"
+
+
