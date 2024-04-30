@@ -17,6 +17,11 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
+dependencies = [
+    "pdf2image  >=  1.17.0",
+    "tqdm >= 4.66.2",
+
+]
 [project.optional-dependencies]
 dev = [
     "pytest",
