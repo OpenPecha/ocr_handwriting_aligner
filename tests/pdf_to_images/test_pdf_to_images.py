@@ -23,4 +23,6 @@ def test_pdf_to_images():
     assert "error" in result
     assert result["error"] == f"PDF file {str(pdf_file_path)} does not exist"
 
+    """ clean up """
+    shutil.rmtree(DATA_DIR / pdf_file_path.stem, ignore_errors=True)
 
