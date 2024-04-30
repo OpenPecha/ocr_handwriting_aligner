@@ -1,9 +1,11 @@
 import math
-
+import matplotlib.pyplot as plt
+import seaborn as sns
 from tqdm import tqdm
 from pathlib import Path
 from pdf2image import convert_from_path, pdfinfo_from_path
 from typing import Dict 
+from PIL import Image
 
 def get_total_pages(pdf_path):
     pdf_info = pdfinfo_from_path(pdf_path)
@@ -44,3 +46,34 @@ def pdf_to_images(pdf_path: Path, output_dir: Path, batch_size:int=10)->Dict:
         return error_msg
 
 
+
+
+def get_image_dimensions(image_path):
+    try:
+        with Image.open(image_path) as img:
+            width, height = img.size
+        return width, height
+    except IOError:
+        return "Error: The file could not be opened. Please check the file path and format."
+
+def plot_displot(data, title, x_label, filename):
+    plt.figure(figsize=(10, 5))
+    sns.set(style="whitegrid")  # Setting the style of the plots
+    ax = sns.displot(data, kind="hist", bins=30, kde=True, color='blue')
+    ax.fig.suptitle(title)  # Title for the plot
+    ax.set_axis_labels(x_label, 'Frequency')  # Set x and y labels
+    plt.subplots_adjust(top=0.9)  # Adjust the plot to make room for the title
+    ax.savefig(filename)  # Save the plot as a file
+    plt.close()  # Close the plot to free up memory
+
+if __name__ == "__main__":
+    images_path = list(Path("images_output/P000010_v001_00001 - 00500").rglob("*.jpg"))
+    widths, heights = [], []
+    for image_path in images_path:
+        width, height = get_image_dimensions(image_path)
+        widths.append(width)
+        heights.append(height)
+    
+    # Visualize the distributions
+    plot_displot(widths, "Distribution of Image Widths", "Width (pixels)", "widths_histogram.jpg")
+    plot_displot(heights, "Distribution of Image Heights", "Height (pixels)", "heights_histogram.jpg")
