@@ -1,7 +1,7 @@
 import shutil
 from pathlib import Path 
 
-from ocr_handwriting_aligner.utility import pdf_to_images
+from ocr_handwriting_aligner.image_utils import pdf_to_images
 
 
 def test_pdf_to_images():
