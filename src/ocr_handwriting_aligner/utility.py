@@ -18,7 +18,7 @@ def pdf_to_images(pdf_path: Path, output_dir: Path, batch_size:int=10)->Dict:
         pdf_to_images_dir.mkdir(parents=True, exist_ok=True)
 
     if not pdf_path.exists():
-        error_msg = {"error": f"PDF file {pdf_path} does not exist"}
+        error_msg = {"error": f"PDF file {str(pdf_path)} does not exist"}
         return error_msg
 
     try:
@@ -40,7 +40,7 @@ def pdf_to_images(pdf_path: Path, output_dir: Path, batch_size:int=10)->Dict:
         return result
 
     except Exception as e:
-        error_msg = {"error": f"Error converting PDF file {pdf_path}: {e}"}
+        error_msg = {"error": f"Error converting PDF file {str(pdf_path)}: {str(e)}"}
         return error_msg
 
 
