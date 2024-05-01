@@ -21,7 +21,7 @@ dependencies = [
     "pdf2image  >=  1.17.0",
     "tqdm >= 4.66.2",
     "seaborn >= 0.13.2",
-    "matplotlib >= 3.8.4",
+    "matplotlib",
     "pillow >= 10.3.0",
 ]
 [project.optional-dependencies]
