@@ -1,19 +1,13 @@
 from pathlib import Path 
 
 from ocr_handwriting_aligner.image_utils import crop_image
+from ocr_handwriting_aligner.utils import standardize_coordinates_from_xml
 
 def test_crop_image():
     DATA_DIR = Path(__file__).parent / "data"
     image_path = DATA_DIR / "potrait_cursive_handwritings.jpg"
     coordinates_from_xml = [(79, 171), (1425, 173), (1427, 331), (78, 327)]
-    x_coords, y_coords = zip(*coordinates_from_xml)
-
-    """ Calculate minimum and maximum x and y values """
-    min_x = min(x_coords)
-    min_y = min(y_coords)
-    max_x = max(x_coords)
-    max_y = max(y_coords)
-    coordinates = (min_x, min_y, max_x, max_y)
+    coordinates = standardize_coordinates_from_xml(coordinates_from_xml)
 
     cropped_image = crop_image(image_path, coordinates)
     cropped_image_path = DATA_DIR / "cropped_image.jpg"

@@ -28,6 +28,17 @@ def get_coordinates_from_xml(xml_path: Path) -> Dict[int, List[Tuple[int, int]]]
 
     return coordinates_dict
 
+def standardize_coordinates_from_xml(coordinates_from_xml:  List[Tuple[int, int]]) -> Tuple[int, int, int, int]:
+    """Standardize the coordinates to be in the range"""
+    """ from xml, we get 4 ordered coordinates,"""
+    """ (x1, y1), (x2, y2), (x3, y3), (x4, y4)"""
+    """ we need to find min_x, min_y, max_x, max_y"""
+    x_coordinates, y_coordinates = zip(*coordinates_from_xml)
+    min_x, max_x = min(x_coordinates), max(x_coordinates)
+    min_y, max_y = min(y_coordinates), max(y_coordinates)
+
+    return (min_x, min_y, max_x, max_y)
+
 if __name__ == "__main__":
     xml_path = Path("resources/potrait/handwriting_line_images_coordinates.xml")
     coordinates_dict = get_coordinates_from_xml(xml_path)
