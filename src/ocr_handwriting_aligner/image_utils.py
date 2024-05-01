@@ -4,7 +4,7 @@ import seaborn as sns
 from tqdm import tqdm
 from pathlib import Path
 from pdf2image import convert_from_path, pdfinfo_from_path
-from typing import Dict 
+from typing import Dict, Tuple
 from PIL import Image
 
 def get_total_pages(pdf_path):
@@ -66,14 +66,12 @@ def plot_displot(data, title, x_label, filename):
     ax.savefig(filename)  # Save the plot as a file
     plt.close()  # Close the plot to free up memory
 
-if __name__ == "__main__":
-    images_path = list(Path("images_output/P000010_v001_00001 - 00500").rglob("*.jpg"))
-    widths, heights = [], []
-    for image_path in images_path:
-        width, height = get_image_dimensions(image_path)
-        widths.append(width)
-        heights.append(height)
-    
-    # Visualize the distributions
-    plot_displot(widths, "Distribution of Image Widths", "Width (pixels)", "widths_histogram.jpg")
-    plot_displot(heights, "Distribution of Image Heights", "Height (pixels)", "heights_histogram.jpg")
+
+def crop_image(image_path:Path, crop_coords:Tuple[int, int, int, int]):
+    try:
+        with Image.open(image_path) as img:
+            cropped_img = img.crop(crop_coords)
+            return cropped_img
+    except Exception as e:
+        print(f"Error cropping image {image_path}: {e}")
+        return None
