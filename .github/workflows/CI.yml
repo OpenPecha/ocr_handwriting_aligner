@@ -21,6 +21,9 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: "3.8"
+
+    - name: Install Poppler, a PDF rendering library
+      run: sudo apt-get install -y poppler-utils
         
     - name: Install dependencies
       run: |
