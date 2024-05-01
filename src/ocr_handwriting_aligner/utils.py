@@ -2,6 +2,12 @@ from pathlib import Path
 from typing import Dict, List, Tuple
 import xml.etree.ElementTree as ET
 
+
+
+def sort_paths_and_get_paths(paths:List[Path]) -> List[Path]:
+    """ sort paths by string and return as string"""
+    return [path for path in sorted(paths, key=lambda path: str(path))]
+
 def get_coordinates_from_xml(xml_path: Path) -> Dict[int, List[Tuple[int, int]]]:
     """Namespace dictionary to handle namespaces in the XML file."""
     namespaces = {
