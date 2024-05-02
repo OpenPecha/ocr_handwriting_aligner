@@ -18,26 +18,37 @@ def get_black_to_white_ration(image_path:Path):
     
     return black_ratio
 
-def classify_line_image(image_path:Path, threshold:int = 0.125)->int:
+def is_image_quality_acceptable(image_path:Path, threshold:int = 0.04)->bool:
     """ input:   image path for line image label 
                  (either a filled black circle ⚫or not filled black circle🔘) 
         output: 1 if the image is filled black circle ⚫ and 0 if not filled black circle🔘"""
     """  ⚫ -> Good image, 🔘 -> Bad image"""
     black_ratio = get_black_to_white_ration(image_path)
     if black_ratio > threshold:
-        return 1
-    else:
-        return 0
+        return True
+    return False
 
 if __name__ == "__main__":
+
     from ocr_handwriting_aligner.image_utils import plot_displot
+    
 
     black_ratios = []
     image_paths = list(Path("cropped_line_images_label").rglob("*.jpg"))
     bad_images_dir = Path("bad_images")
     bad_images_dir.mkdir(parents=True, exist_ok=True)
+
+    good_images_dir = Path("good_images")
+    good_images_dir.mkdir(parents=True, exist_ok=True)
+
     for image_path in image_paths:
         black_ratio = get_black_to_white_ration(image_path)
+        if black_ratio > 0.04:
+            image_file_path = good_images_dir / image_path.name
+        else:
+            image_file_path = bad_images_dir / image_path.name
+        """ save image"""
+        Image.open(image_path).save(image_file_path)
         black_ratios.append(black_ratio)
 
     plot_displot(black_ratios, "Black to White Ratio", "Black to White Ratio", "black_to_white_ratio.jpg")
