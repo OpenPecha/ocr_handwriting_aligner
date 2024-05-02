@@ -19,9 +19,6 @@ def get_black_to_white_ration(image_path:Path):
     return black_ratio
 
 def is_image_quality_acceptable(image_path:Path, threshold:int = 0.04)->bool:
-    """ input:   image path for line image label 
-                 (either a filled black circle ⚫or not filled black circle🔘) 
-        output: 1 if the image is filled black circle ⚫ and 0 if not filled black circle🔘"""
     """  ⚫ -> Good image, 🔘 -> Bad image"""
     black_ratio = get_black_to_white_ration(image_path)
     if black_ratio > threshold:
