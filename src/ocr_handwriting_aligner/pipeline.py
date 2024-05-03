@@ -13,7 +13,7 @@ def crop_image_pipeline(image_path: Path, output_dir:Path, xml_path:Path):
     for idx,coordinate_from_xml in enumerate(coordinates_from_xml.values()):
             coordinate = standardize_coordinates_from_xml(coordinate_from_xml)
             cropped_image = crop_image(image_path, coordinate)
-            cropped_image.save(output_dir / f"{image_path.stem}_{idx}.jpg")
+            cropped_image.save(output_dir / f"{image_path.stem}_{idx+1}.jpg")
 
 
 def pipeline(images_path: List[Path]):
@@ -29,13 +29,16 @@ def pipeline(images_path: List[Path]):
     for image_path in tqdm(images_path, desc="Cropping line images"):
         """ coordinates_from_xml is a dictionary with keys as line numbers and values as list of coordinates"""
         """ there will be coordinates for each line in the image(7 lines)"""
+        
+        """ line image """
         cropped_image_dir = line_image_dir / image_path.stem
         crop_image_pipeline(image_path, cropped_image_dir, PORTRAIT_LINE_IMAGES_COORDINATES_XML_PATH)
         
+        """ line image label """
         cropped_image_dir = line_image_label_dir / image_path.stem
         crop_image_pipeline(image_path, cropped_image_dir, PORTRAIT_LINE_IMAGES_LABEL_COORDINATES_XML_PATH)
         
-
+        """ """
 
 if __name__ == "__main__":
     images_path = list(Path("images_output").rglob("*.jpg"))
