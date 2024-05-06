@@ -28,18 +28,21 @@ def is_image_quality_acceptable(image_path:Path, threshold:int = 0.04)->bool:
 if __name__ == "__main__":
 
     from ocr_handwriting_aligner.image_utils import plot_displot
-    
+    from tqdm import tqdm 
 
     black_ratios = []
-    image_paths = list(Path("cropped_line_images_label").rglob("*.jpg"))
+    image_paths = list(Path("cropped_line_images").rglob("*.jpg"))
     bad_images_dir = Path("bad_images")
     bad_images_dir.mkdir(parents=True, exist_ok=True)
 
     good_images_dir = Path("good_images")
     good_images_dir.mkdir(parents=True, exist_ok=True)
 
-    for image_path in image_paths:
-        black_ratio = get_black_to_white_ration(image_path)
+
+    line_image_label_dir = Path("cropped_line_images_label")
+    for image_path in tqdm(image_paths, desc="Checking image quality"):
+        label_image_path = line_image_label_dir / image_path.parent.stem / image_path.name
+        black_ratio = get_black_to_white_ration(label_image_path)
         if black_ratio > 0.04:
             image_file_path = good_images_dir / image_path.name
         else:
