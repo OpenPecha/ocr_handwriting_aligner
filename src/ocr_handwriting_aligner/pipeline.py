@@ -89,7 +89,7 @@ def pipeline(images_path: List[Path], transcript_file_path:Path, image_orientati
 
         """ check if the image quality is acceptable"""
         """ if the image quality is acceptable, then get the transcript for the line image"""
-        if is_image_quality_acceptable(label_image_path):
+        if is_image_quality_acceptable(label_image_path, image_orientation):
             image_name = image_path.parent.name
             image_number = int(image_name.split("_")[-1])
             line_number = int(image_path.stem.split("_")[-1])
@@ -111,5 +111,5 @@ if __name__ == "__main__":
     transcript_file_path = Path("P000013_v001.csv")
     image_orientation="Landscape"
     acceptable_images = pipeline(images_path, transcript_file_path, image_orientation)
-    print(f"Number of line images: {len(images_path)*7}")
+    print(f"Number of line images: {len(images_path)*5}")
     print(f"Number of acceptable line images: {len(acceptable_images)}")

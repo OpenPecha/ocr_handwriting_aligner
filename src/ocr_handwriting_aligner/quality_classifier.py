@@ -1,6 +1,9 @@
-from pathlib import Path 
+import numpy as np
 
+from pathlib import Path 
 from PIL import Image
+from typing import List 
+from skimage.filters import threshold_otsu
 
 def get_black_to_white_ration(image_path:Path):
     """ Load the image and convert to gray scale """
@@ -18,12 +21,22 @@ def get_black_to_white_ration(image_path:Path):
     
     return black_ratio
 
-def is_image_quality_acceptable(image_path:Path, threshold:int = 0.04)->bool:
+def is_image_quality_acceptable(image_path:Path, image_orientation:str)->bool:
     """  ⚫ -> Good image, 🔘 -> Bad image"""
+    threshold = 0.04 if image_orientation == "Portrait" else 0.01065109179146519
     black_ratio = get_black_to_white_ration(image_path)
     if black_ratio > threshold:
         return True
     return False
+
+def get_threshold_value(data: List):
+    """ input: list of values, output: optimal threshold value for the given data"""
+
+    """ Convert the data to numpy array"""
+    data = np.array(data)
+    """ Applying Otsu's method to find an optimal threshold value"""
+    optimal_threshold = threshold_otsu(data)
+    return optimal_threshold
 
 if __name__ == "__main__":
 
@@ -43,12 +56,12 @@ if __name__ == "__main__":
     for image_path in tqdm(image_paths, desc="Checking image quality"):
         label_image_path = line_image_label_dir / image_path.parent.stem / image_path.name
         black_ratio = get_black_to_white_ration(label_image_path)
-        if black_ratio > 0.04:
+        if black_ratio > 0.01065109179146519:
             image_file_path = good_images_dir / image_path.name
         else:
             image_file_path = bad_images_dir / image_path.name
         """ save image"""
-        Image.open(image_path).save(image_file_path)
+        image_label_path = line_image_label_dir / image_path.parent.stem / image_path.name
+        Image.open(image_label_path).save(image_file_path)
         black_ratios.append(black_ratio)
 
-    plot_displot(black_ratios, "Black to White Ratio", "Black to White Ratio", "black_to_white_ratio.jpg")
