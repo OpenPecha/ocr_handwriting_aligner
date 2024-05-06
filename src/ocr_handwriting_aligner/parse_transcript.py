@@ -7,11 +7,13 @@ def get_line_image_transcript(transcript_file_path:Path, image_number:int, line_
     image_transcript_str = text.split("\n")[image_number-1]
     parsed_image_transcript = image_transcript_str.split(",")
     image_transcript = {}
-    if len(parsed_image_transcript) == 8:
-        image_transcript["name"] = parsed_image_transcript[0]
-        image_transcript["text"] = parsed_image_transcript[line_number]
-        return image_transcript
-    return None 
+    try:
+            image_transcript["name"] = parsed_image_transcript[0]
+            image_transcript["text"] = parsed_image_transcript[line_number]
+            return image_transcript
+    except Exception as e: 
+        print(f"Transcript not found for image number {image_number} and line number {line_number}")
+        return None 
 
 
 
