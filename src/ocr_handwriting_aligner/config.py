@@ -11,3 +11,4 @@ PORTRAIT_LINE_IMAGES_COORDINATES_XML_PATH = POTRAIT_DIR / "handwriting_line_imag
 PORTRAIT_LINE_IMAGES_LABEL_COORDINATES_XML_PATH = POTRAIT_DIR / "handwriting_line_images_label_coordinates.xml"
 
 
+PORTRAIT_IMAGE_MARGIN = {'Top-Left': (74, 57), 'Bottom-Right': (1578, 2256)}

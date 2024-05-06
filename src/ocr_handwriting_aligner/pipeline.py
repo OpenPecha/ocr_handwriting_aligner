@@ -6,15 +6,21 @@ from tqdm import tqdm
 
 from ocr_handwriting_aligner.utils import get_coordinates_from_xml, standardize_coordinates_from_xml, sort_paths_and_get_paths
 from ocr_handwriting_aligner.image_utils import crop_image
-from ocr_handwriting_aligner.config import PORTRAIT_LINE_IMAGES_COORDINATES_XML_PATH, PORTRAIT_LINE_IMAGES_LABEL_COORDINATES_XML_PATH
+from ocr_handwriting_aligner.config import PORTRAIT_LINE_IMAGES_COORDINATES_XML_PATH, PORTRAIT_LINE_IMAGES_LABEL_COORDINATES_XML_PATH, PORTRAIT_IMAGE_MARGIN
 from ocr_handwriting_aligner.quality_classifier import is_image_quality_acceptable
 from ocr_handwriting_aligner.parse_transcript import get_line_image_transcript
+from ocr_handwriting_aligner.margin import get_image_margin
 
 def crop_image_pipeline(image_path: Path, output_dir:Path, xml_path:Path):
     output_dir.mkdir(parents=True, exist_ok=True)
     coordinates_from_xml =  get_coordinates_from_xml(xml_path)
+    margin = get_image_margin(str(image_path))
+    vertical_diff = PORTRAIT_IMAGE_MARGIN["Top-Left"][1]-margin["Top-Left"][1]
+    horizontal_diff = PORTRAIT_IMAGE_MARGIN["Top-Left"][0]-margin["Top-Left"][0]
     for idx,coordinate_from_xml in enumerate(coordinates_from_xml.values()):
             coordinate = standardize_coordinates_from_xml(coordinate_from_xml)
+            """ Adjust the coordinates based on the margin of the image"""
+            coordinate = (coordinate[0]-horizontal_diff, coordinate[1]-vertical_diff, coordinate[2]-horizontal_diff, coordinate[3]-vertical_diff)
             cropped_image = crop_image(image_path, coordinate)
             cropped_image.save(output_dir / f"{image_path.stem}_{idx+1}.jpg")
 
