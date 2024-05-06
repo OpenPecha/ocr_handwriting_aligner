@@ -33,6 +33,9 @@ def crop_line_image_pipeline(image_path: Path, output_dir:Path, xml_path:Path, i
             """ Adjust the coordinates based on the margin of the image"""
             coordinate = (coordinate[0]-horizontal_diff, coordinate[1]-vertical_diff, coordinate[2]-horizontal_diff, coordinate[3]-vertical_diff)
             cropped_image = crop_image(image_path, coordinate)
+            """ Check if the image is in portrait mode and rotate if necessary """ 
+            if cropped_image.height > cropped_image.width:
+                cropped_image = cropped_image.rotate(-90, expand=True)
             cropped_image.save(output_dir / f"{image_path.stem}_{idx+1}.jpg")
 
 
@@ -46,6 +49,9 @@ def crop_line_image_label_pipeline(image_path: Path, output_dir:Path, xml_path:P
             """ Adjust the coordinates based on the margin of the image"""
             coordinate = (coordinate[0], coordinate[1], coordinate[2], coordinate[3])
             cropped_image = crop_image(image_path, coordinate)
+            """ Check if the image is in portrait mode and rotate if necessary """ 
+            if cropped_image.height > cropped_image.width:
+                cropped_image = cropped_image.rotate(-90, expand=True)
             cropped_image.save(output_dir / f"{image_path.stem}_{idx+1}.jpg")
 
 
