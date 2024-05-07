@@ -36,7 +36,8 @@ def crop_line_image_pipeline(image_path: Path, output_dir:Path, xml_path:Path, i
             """ Check if the image is in portrait mode and rotate if necessary """ 
             if cropped_image.height > cropped_image.width:
                 cropped_image = cropped_image.rotate(-90, expand=True)
-            cropped_image_name = image_path.stem.split("-")[0].strip() if "-" in image_path.stem else image_path.stem
+            parsed_image_name = image_path.stem.split("_")
+            cropped_image_name = f"{parsed_image_name[0]}_{parsed_image_name[1]}_{parsed_image_name[-1]}"
             cropped_image.save(output_dir / f"{cropped_image_name}_{idx+1}.jpg")
 
 
@@ -95,9 +96,9 @@ def pipeline(pdf_file_path:Path, transcript_file_path:Path, image_orientation:st
         """ check if the image quality is acceptable"""
         """ if the image quality is acceptable, then get the transcript for the line image"""
         if is_image_quality_acceptable(label_image_path, image_orientation):
-            image_name = image_path.parent.name
-            image_number = int(image_name.split("_")[-1])
-            line_number = int(image_path.stem.split("_")[-1])
+            image_name = image_path.stem
+            image_number = int(image_name.split("_")[-2])
+            line_number = int(image_name.split("_")[-1])
             image_transcript = get_line_image_transcript(transcript_file_path, image_number, line_number)
             if image_transcript is None:
                 continue
@@ -113,7 +114,7 @@ def pipeline(pdf_file_path:Path, transcript_file_path:Path, image_orientation:st
 
 if __name__ == "__main__":
     pdf_file_path = Path("P000013_v001_00001 - 00353.pdf")
-    transcript_file_path = Path("P000013_v001.csv")
+    transcript_file_path = Path("P000013_v001_transcript.csv")
     image_orientation="Landscape"
     acceptable_images = pipeline(pdf_file_path, transcript_file_path, image_orientation)
     print(f"Number of acceptable line images: {len(acceptable_images)}")
