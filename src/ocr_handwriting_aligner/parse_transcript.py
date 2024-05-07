@@ -1,7 +1,9 @@
 import csv 
 import pandas as pd
+import shutil 
 
 from pathlib import Path 
+
 
 def get_line_image_transcript(transcript_file_path:Path, image_number:int, line_number:int):
     text = transcript_file_path.read_text(encoding="utf-8")
@@ -53,6 +55,16 @@ def standardize_line_texts_to_images_csv_mapping(csv_file_path:Path, batch_id:st
         row = [image_name, transcript, image_url]
         add_row_to_csv(row, output_file_path)
         row = []
+    
+    """ copying the images to the output directory"""
+    output_dir = Path(f"{batch_id}_{volume_id}")
+    if output_dir.exists():
+        shutil.rmtree(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    
+    for image_path in images_path:
+        shutil.copy(image_path, output_dir)
+    
 
     return output_file_path
 
