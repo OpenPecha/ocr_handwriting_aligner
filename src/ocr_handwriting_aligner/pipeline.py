@@ -39,21 +39,6 @@ def crop_line_image_pipeline(image_path: Path, output_dir:Path, xml_path:Path, i
             cropped_image.save(output_dir / f"{image_path.stem}_{idx+1}.jpg")
 
 
-def crop_line_image_label_pipeline(image_path: Path, output_dir:Path, xml_path:Path):
-    """ This function crops the line images from the given image based on the coordinates from the xml file."""
-    output_dir.mkdir(parents=True, exist_ok=True)
-    coordinates_from_xml =  get_coordinates_from_xml(xml_path)
-
-    for idx,coordinate_from_xml in enumerate(coordinates_from_xml.values()):
-            coordinate = standardize_coordinates_from_xml(coordinate_from_xml)
-            """ Adjust the coordinates based on the margin of the image"""
-            coordinate = (coordinate[0], coordinate[1], coordinate[2], coordinate[3])
-            cropped_image = crop_image(image_path, coordinate)
-            """ Check if the image is in portrait mode and rotate if necessary """ 
-            if cropped_image.height > cropped_image.width:
-                cropped_image = cropped_image.rotate(-90, expand=True)
-            cropped_image.save(output_dir / f"{image_path.stem}_{idx+1}.jpg")
-
 
 
 def pipeline(images_path: List[Path], transcript_file_path:Path, image_orientation:str, output_csv_path:Path=Path("line_image_mapping.csv")):
@@ -78,7 +63,7 @@ def pipeline(images_path: List[Path], transcript_file_path:Path, image_orientati
         """ line image label """
         cropped_image_dir = line_image_label_dir / image_path.stem
         xml_path = PORTRAIT_LINE_IMAGES_LABEL_COORDINATES_XML_PATH if image_orientation == "Portrait" else LANDSCAPE_LINE_IMAGES_LABEL_COORDINATES_XML_PATH
-        crop_line_image_label_pipeline(image_path, cropped_image_dir, xml_path)
+        crop_line_image_pipeline(image_path, cropped_image_dir, xml_path, image_orientation)
         
     """ get acceptable good line images """
     images_path = list(line_image_dir.rglob("*.jpg"))
@@ -114,8 +99,8 @@ def pipeline(images_path: List[Path], transcript_file_path:Path, image_orientati
 
 if __name__ == "__main__":
     images_path = list(Path("pdf_to_images_output").rglob("*.jpg"))
-    transcript_file_path = Path("P000013_v001.csv")
-    image_orientation="Landscape"
+    transcript_file_path = Path("P000010_v001.csv")
+    image_orientation="Portrait"
     acceptable_images = pipeline(images_path, transcript_file_path, image_orientation)
     print(f"Number of line images: {len(images_path)*5}")
     print(f"Number of acceptable line images: {len(acceptable_images)}")
