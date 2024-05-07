@@ -36,7 +36,8 @@ def crop_line_image_pipeline(image_path: Path, output_dir:Path, xml_path:Path, i
             """ Check if the image is in portrait mode and rotate if necessary """ 
             if cropped_image.height > cropped_image.width:
                 cropped_image = cropped_image.rotate(-90, expand=True)
-            cropped_image.save(output_dir / f"{image_path.stem}_{idx+1}.jpg")
+            cropped_image_name = image_path.stem.split("-")[0].strip() if "-" in image_path.stem else image_path.stem
+            cropped_image.save(output_dir / f"{cropped_image_name}_{idx+1}.jpg")
 
 
 
