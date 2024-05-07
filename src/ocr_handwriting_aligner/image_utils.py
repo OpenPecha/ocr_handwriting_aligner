@@ -27,7 +27,7 @@ def pdf_to_images(pdf_path: Path, output_dir: Path, batch_size:int=10)->Dict:
         total_pages = get_total_pages(pdf_path)
         total_batches = math.ceil(total_pages / batch_size)
 
-        result = {"images_path":[]}
+        result = []
         """ spliting pdf to images in batches, since pdf2image is not able to convert all pages at once"""
         for batch_index in tqdm(range(total_batches), desc=f"Converting pdf to images in {total_batches} batches"):
             start_page = batch_index * batch_size + 1
@@ -37,7 +37,7 @@ def pdf_to_images(pdf_path: Path, output_dir: Path, batch_size:int=10)->Dict:
             for i, page in enumerate(pages, start=start_page):
                 image_path = pdf_to_images_dir / f"{pdf_path.stem}_to_image_{i:06}.jpg"
                 page.save(image_path, "JPEG")
-                result["images_path"].append(image_path)
+                result.append(image_path)
         
         return result
 
@@ -75,3 +75,5 @@ def crop_image(image_path:Path, crop_coords:Tuple[int, int, int, int]):
     except Exception as e:
         print(f"Error cropping image {image_path}: {e}")
         return None
+
+

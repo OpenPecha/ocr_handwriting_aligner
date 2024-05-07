@@ -5,7 +5,7 @@ from typing import List
 from tqdm import tqdm 
 
 from ocr_handwriting_aligner.utils import get_coordinates_from_xml, standardize_coordinates_from_xml, sort_paths_and_get_paths
-from ocr_handwriting_aligner.image_utils import crop_image
+from ocr_handwriting_aligner.image_utils import crop_image, pdf_to_images
 from ocr_handwriting_aligner.config import (
         PORTRAIT_LINE_IMAGES_COORDINATES_XML_PATH, 
         PORTRAIT_LINE_IMAGES_LABEL_COORDINATES_XML_PATH, 
@@ -41,8 +41,10 @@ def crop_line_image_pipeline(image_path: Path, output_dir:Path, xml_path:Path, i
 
 
 
-def pipeline(images_path: List[Path], transcript_file_path:Path, image_orientation:str, output_csv_path:Path=Path("line_image_mapping.csv")):
+def pipeline(pdf_file_path:Path, transcript_file_path:Path, image_orientation:str, output_csv_path:Path=Path("line_image_mapping.csv")):
     """ This function is the main pipeline function that will be called to crop the line images from the given images"""
+    
+    images_path = pdf_to_images(pdf_file_path, Path("pdf_to_images_output"))
     line_image_dir = Path("cropped_line_images")
     line_image_label_dir = Path("cropped_line_images_label") 
     
@@ -98,9 +100,8 @@ def pipeline(images_path: List[Path], transcript_file_path:Path, image_orientati
     return acceptable_images
 
 if __name__ == "__main__":
-    images_path = list(Path("pdf_to_images_output").rglob("*.jpg"))
-    transcript_file_path = Path("P000010_v001.csv")
-    image_orientation="Portrait"
-    acceptable_images = pipeline(images_path, transcript_file_path, image_orientation)
-    print(f"Number of line images: {len(images_path)*5}")
+    pdf_file_path = Path("P000013_v001_00001 - 00353.pdf")
+    transcript_file_path = Path("P000013_v001.csv")
+    image_orientation="Landscape"
+    acceptable_images = pipeline(pdf_file_path, transcript_file_path, image_orientation)
     print(f"Number of acceptable line images: {len(acceptable_images)}")

@@ -10,8 +10,8 @@ def test_pdf_to_images():
 
     result = pdf_to_images(pdf_file_path, DATA_DIR)
     assert "images_path" in result
-    assert len(result["images_path"]) == 3
-    for image_path in result["images_path"]:
+    assert len(result) == 3
+    for image_path in result:
         assert image_path.exists()
     
     """ Clean up"""
