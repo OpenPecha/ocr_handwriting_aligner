@@ -17,10 +17,3 @@ def get_line_image_transcript(transcript_file_path:Path, image_number:int, line_
 
 
 
-
-if __name__ == "__main__":
-    transcript_path = Path("P000010_v001.csv")
-    image_number = 1
-    image_transcript = get_line_image_transcript(transcript_path, image_number)
-    print(image_transcript)
-

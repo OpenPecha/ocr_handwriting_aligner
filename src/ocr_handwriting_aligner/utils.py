@@ -44,8 +44,3 @@ def standardize_coordinates_from_xml(coordinates_from_xml:  List[Tuple[int, int]
     min_y, max_y = min(y_coordinates), max(y_coordinates)
 
     return (min_x, min_y, max_x, max_y)
-
-if __name__ == "__main__":
-    xml_path = Path("resources/potrait/handwriting_line_images_coordinates.xml")
-    coordinates_dict = get_coordinates_from_xml(xml_path)
-    print(coordinates_dict)
