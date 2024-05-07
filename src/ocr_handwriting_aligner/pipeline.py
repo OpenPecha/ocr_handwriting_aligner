@@ -1,7 +1,7 @@
 import csv 
-from pathlib import Path 
-from typing import List
+import shutil 
 
+from pathlib import Path 
 from tqdm import tqdm 
 
 from ocr_handwriting_aligner.utils import get_coordinates_from_xml, standardize_coordinates_from_xml, sort_paths_and_get_paths
@@ -45,10 +45,18 @@ def crop_line_image_pipeline(image_path: Path, output_dir:Path, xml_path:Path, i
 def pipeline(pdf_file_path:Path, transcript_file_path:Path, image_orientation:str, output_csv_path:Path=Path("line_image_mapping.csv")):
     """ This function is the main pipeline function that will be called to crop the line images from the given images"""
     
-    images_path = pdf_to_images(pdf_file_path, Path("pdf_to_images_output"))
+    images_output = Path("pdf_to_images_output")
     line_image_dir = Path("cropped_line_images")
     line_image_label_dir = Path("cropped_line_images_label") 
-    
+
+    """ Remove the directories if they exist"""
+    directories = [images_output, line_image_dir, line_image_label_dir]
+    for directory in directories:
+        if directory.exists():
+            shutil.rmtree(directory)
+
+
+    images_path = pdf_to_images(pdf_file_path, images_output)
     line_image_dir.mkdir(parents=True, exist_ok=True)
     line_image_label_dir.mkdir(parents=True, exist_ok=True)
 
