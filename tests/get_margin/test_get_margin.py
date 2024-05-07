@@ -15,4 +15,3 @@ def test_get_image_margin():
     assert margin_coordinate == {'Top-Left': (72, 70), 'Bottom-Right': (1580, 2273)}
 
 
-test_get_image_margin()

@@ -29,10 +29,3 @@ def get_image_margin(image_path:str):
     return margins
 
 
-
-if __name__ == "__main__":
-    
-    image_path = "P000013_v001_00001 - 00353_to_image_000001.jpg"
-    margin_coordinate = get_image_margin(image_path)
-    print(margin_coordinate)
-    

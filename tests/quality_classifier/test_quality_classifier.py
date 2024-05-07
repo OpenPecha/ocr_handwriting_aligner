@@ -14,4 +14,3 @@ def test_quality_classfier():
     result = is_image_quality_acceptable(bad_image_label_path, image_orientation)
     assert result == False
 
-test_quality_classfier()
