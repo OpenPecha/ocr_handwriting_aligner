@@ -45,6 +45,9 @@ def crop_line_image_pipeline(image_path: Path, output_dir:Path, xml_path:Path, i
 def pipeline(pdf_file_path:Path, transcript_file_path:Path, image_orientation:str, output_csv_path:Path=Path("line_image_mapping.csv")):
     """ This function is the main pipeline function that will be called to crop the line images from the given images"""
     
+    if image_orientation not in ["Portrait", "Landscape"]:
+        raise ValueError("Image orientation should be either Portrait or Landscape")
+
     images_output = Path("pdf_to_images_output")
     line_image_dir = Path("cropped_line_images")
     line_image_label_dir = Path("cropped_line_images_label") 
