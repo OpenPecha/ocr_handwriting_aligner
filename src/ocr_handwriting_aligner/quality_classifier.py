@@ -23,7 +23,7 @@ def get_black_to_white_ratio(image_path:Path):
 
 def is_image_quality_acceptable(image_path:Path, image_orientation:str)->bool:
     """  ⚫ -> Good image, 🔘 -> Bad image"""
-    threshold = 0.04 if image_orientation == "Portrait" else 0.01065109179146519
+    threshold = 0.04 if image_orientation == "Portrait" else 0.03
     black_ratio = get_black_to_white_ratio(image_path)
     if black_ratio > threshold:
         return True
@@ -56,7 +56,7 @@ if __name__ == "__main__":
     for image_path in tqdm(image_paths, desc="Checking image quality"):
         label_image_path = line_image_label_dir / image_path.parent.stem / image_path.name
         black_ratio = get_black_to_white_ratio(label_image_path)
-        if black_ratio > 0.01065109179146519:
+        if black_ratio > 0.03:
             image_file_path = good_images_dir / image_path.name
         else:
             image_file_path = bad_images_dir / image_path.name
