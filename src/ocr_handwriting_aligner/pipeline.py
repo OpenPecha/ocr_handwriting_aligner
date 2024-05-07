@@ -102,11 +102,11 @@ def pipeline(pdf_file_path:Path, transcript_file_path:Path, image_orientation:st
             if image_transcript is None:
                 continue
             if image_transcript["text"] :
-                acceptable_images.append({"images_path": str(image_path), "transcripts": image_transcript["text"]})
+                acceptable_images.append({"image_path": str(image_path), "transcript": image_transcript["text"]})
 
     """ write the mapping to csv"""
     with open(output_csv_path, 'w') as csvfile: 
-        writer = csv.DictWriter(csvfile, fieldnames = ["images_path", "transcripts"]) 
+        writer = csv.DictWriter(csvfile, fieldnames = ["image_path", "transcript"]) 
         writer.writeheader() 
         writer.writerows(acceptable_images) 
     return acceptable_images
