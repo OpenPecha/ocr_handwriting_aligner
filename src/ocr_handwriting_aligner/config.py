@@ -17,4 +17,4 @@ LANDSCAPE_LINE_IMAGES_LABEL_COORDINATES_XML_PATH = LANDSCAPE_DIR / "handwriting_
 
 
 PORTRAIT_IMAGE_MARGIN = {'Top-Left': (74, 57), 'Bottom-Right': (1578, 2256)}
-LANDSCAPE_IMAGE_MARGIN = {'Top-Left': (72, 71), 'Bottom-Right': (1580, 2273)}
+LANDSCAPE_IMAGE_MARGIN = {'Top-Left': (72, 70), 'Bottom-Right': (1580, 2273)}
