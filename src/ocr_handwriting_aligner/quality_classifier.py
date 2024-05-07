@@ -5,7 +5,7 @@ from PIL import Image
 from typing import List 
 from skimage.filters import threshold_otsu
 
-def get_black_to_white_ration(image_path:Path):
+def get_black_to_white_ratio(image_path:Path):
     """ Load the image and convert to gray scale """
     img = Image.open(image_path)
     img_gray = img.convert('L')
@@ -24,7 +24,7 @@ def get_black_to_white_ration(image_path:Path):
 def is_image_quality_acceptable(image_path:Path, image_orientation:str)->bool:
     """  ⚫ -> Good image, 🔘 -> Bad image"""
     threshold = 0.04 if image_orientation == "Portrait" else 0.01065109179146519
-    black_ratio = get_black_to_white_ration(image_path)
+    black_ratio = get_black_to_white_ratio(image_path)
     if black_ratio > threshold:
         return True
     return False
@@ -55,7 +55,7 @@ if __name__ == "__main__":
     line_image_label_dir = Path("cropped_line_images_label")
     for image_path in tqdm(image_paths, desc="Checking image quality"):
         label_image_path = line_image_label_dir / image_path.parent.stem / image_path.name
-        black_ratio = get_black_to_white_ration(label_image_path)
+        black_ratio = get_black_to_white_ratio(label_image_path)
         if black_ratio > 0.01065109179146519:
             image_file_path = good_images_dir / image_path.name
         else:
