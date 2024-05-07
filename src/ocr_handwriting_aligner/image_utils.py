@@ -35,7 +35,7 @@ def pdf_to_images(pdf_path: Path, output_dir: Path, batch_size:int=10)->Dict:
             pages = convert_from_path(pdf_path, first_page=start_page, last_page=end_page)
 
             for i, page in enumerate(pages, start=start_page):
-                image_path = pdf_to_images_dir / f"{pdf_path.stem}_to_image_{i:06}.jpg"
+                image_path = pdf_to_images_dir / f"{pdf_path.stem}_to_image_{i:05}.jpg"
                 page.save(image_path, "JPEG")
                 result.append(image_path)
         
