@@ -23,6 +23,10 @@ def pdf_to_images(pdf_path: Path, output_dir: Path, batch_size:int=10)->Dict:
         error_msg = {"error": f"PDF file {str(pdf_path)} does not exist"}
         return error_msg
 
+    pdf_page_range = pdf_path.stem.split("_")[-1]
+    first_page = int(pdf_page_range.split("-")[0].strip())
+    page_num = first_page
+    
     try:
         total_pages = get_total_pages(pdf_path)
         total_batches = math.ceil(total_pages / batch_size)
@@ -38,7 +42,8 @@ def pdf_to_images(pdf_path: Path, output_dir: Path, batch_size:int=10)->Dict:
                 if page.width > page.height:
                     page = page.rotate(90, expand=True)
 
-                image_path = pdf_to_images_dir / f"{pdf_path.stem}_to_image_{i:05}.jpg"
+                image_path = pdf_to_images_dir / f"{pdf_path.stem}_to_image_{page_num:05}.jpg"
+                page_num += 1
                 page.save(image_path, "JPEG")
                 result.append(image_path)
         
