@@ -1,3 +1,7 @@
+cropped_line_images/
+cropped_line_images_label/
+pdf_to_images_output/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
