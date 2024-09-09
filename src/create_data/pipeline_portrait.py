@@ -10,8 +10,6 @@ from ocr_handwriting_aligner.config import (
         PORTRAIT_LINE_IMAGES_COORDINATES_XML_PATH, 
         PORTRAIT_LINE_IMAGES_LABEL_COORDINATES_XML_PATH, 
         PORTRAIT_IMAGE_MARGIN,
-        LANDSCAPE_LINE_IMAGES_COORDINATES_XML_PATH,
-        LANDSCAPE_LINE_IMAGES_LABEL_COORDINATES_XML_PATH,
         LANDSCAPE_IMAGE_MARGIN
 )
 from ocr_handwriting_aligner.quality_classifier import is_image_quality_acceptable
@@ -41,44 +39,43 @@ def crop_line_image_pipeline(image_path: Path, output_dir:Path, xml_path:Path, i
             cropped_image.save(output_dir / f"{cropped_image_name}_{idx+1}.jpg")
 
 
+def write_csv(data, output_csv_path:Path):
+    if output_csv_path.exists() != True:
+        with open(output_csv_path, mode='w') as file:
+            writer = csv.writer(file)
+            writer.writerow(["image_name", "transcript", "orientation", "image_url"])
+            for row in data:
+                writer.writerow([row["image_name"], row["transcript"], row["orientation"], row["image_url"]])
+    else:
+        with open(output_csv_path, mode='a') as file:
+            writer = csv.writer(file)
+            for row in data:
+                writer.writerow([row["image_name"], row["transcript"]], row["orientation"], row["image_url"])
 
 
-def pipeline(pdf_file_path:Path, transcript_file_path:Path, image_orientation:str, output_csv_path:Path=Path("line_image_mapping-portait-000011_v001_00001-00500.csv")):
+
+def pipeline(pdf_file_path:Path, transcript_file_path:Path, file_name:str, image_orientation:str="Portrait"):
     """ This function is the main pipeline function that will be called to crop the line images from the given images"""
-    
-    if image_orientation not in ["Portrait", "Landscape"]:
-        raise ValueError("Image orientation should be either Portrait or Landscape")
-
-    images_output = Path("pdf_to_images_output-portrait-000011_v001_00001-00500")
-    line_image_dir = Path("cropped_line_images-portriat-000011_v001_00001-00500")
-    line_image_label_dir = Path("cropped_line_images_label-portriat-000011_v001_00001-00500") 
-
-    """ Remove the directories if they exist"""
-    directories = [images_output, line_image_dir, line_image_label_dir]
-    for directory in directories:
-        if directory.exists():
-            shutil.rmtree(directory)
-
+    images_output = Path(f"./data/pdf_to_images/{file_name}")
+    line_image_dir = Path(f"./data/output/line_images/{file_name}")
+    output_csv_path = Path(f"./data/output/csv/{file_name}.csv")
+    label_image_dir = Path(f"./data/output/line_images_label/{file_name}")
+    line_xml_path = PORTRAIT_LINE_IMAGES_COORDINATES_XML_PATH
+    label_xml_path = PORTRAIT_LINE_IMAGES_LABEL_COORDINATES_XML_PATH
 
     images_path = pdf_to_images(pdf_file_path, images_output)
     line_image_dir.mkdir(parents=True, exist_ok=True)
-    line_image_label_dir.mkdir(parents=True, exist_ok=True)
+    label_image_dir.mkdir(parents=True, exist_ok=True)
+
 
     images_path = sort_paths_and_get_paths(images_path)
 
     for image_path in tqdm(images_path, desc="Cropping line images"):
         """ coordinates_from_xml is a dictionary with keys as line numbers and values as list of coordinates"""
         """ there will be coordinates for each line in the image(7 lines)"""
-        
         """ line image """
-        cropped_image_dir = line_image_dir / image_path.stem
-        xml_path = PORTRAIT_LINE_IMAGES_COORDINATES_XML_PATH if image_orientation== "Portrait" else LANDSCAPE_LINE_IMAGES_COORDINATES_XML_PATH
-        crop_line_image_pipeline(image_path, cropped_image_dir, xml_path, image_orientation)
-        
-        """ line image label """
-        cropped_image_dir = line_image_label_dir / image_path.stem
-        xml_path = PORTRAIT_LINE_IMAGES_LABEL_COORDINATES_XML_PATH if image_orientation == "Portrait" else LANDSCAPE_LINE_IMAGES_LABEL_COORDINATES_XML_PATH
-        crop_line_image_pipeline(image_path, cropped_image_dir, xml_path, image_orientation)
+        crop_line_image_pipeline(image_path, line_image_dir, line_xml_path, image_orientation)
+        crop_line_image_pipeline(image_path, label_image_dir, label_xml_path, image_orientation)
         
     """ get acceptable good line images """
     images_path = list(line_image_dir.rglob("*.jpg"))
@@ -87,7 +84,7 @@ def pipeline(pdf_file_path:Path, transcript_file_path:Path, image_orientation:st
     acceptable_images = []
     for image_path in tqdm(images_path, desc="Getting acceptable line images"):
         """ get line image label path """
-        label_image_path = line_image_label_dir / image_path.parent.stem / image_path.name
+        label_image_path = label_image_dir / image_path.name
         
         if not label_image_path.exists():
             print(f"Label image not found for {str(image_path)}")
@@ -103,19 +100,17 @@ def pipeline(pdf_file_path:Path, transcript_file_path:Path, image_orientation:st
             if image_transcript is None:
                 continue
             if image_transcript["text"] :
-                acceptable_images.append({"image_path": str(image_path), "transcript": image_transcript["text"]})
+                acceptable_images.append({"image_name": str(image_path), "transcript": image_transcript["text"], "orientation": image_orientation, "image_url": f"https://s3.amazonaws.com/monlam.ai.ocr/Handwritten-cursive/Images/{file_name}/{image_path.name}"})
 
-    """ write the mapping to csv"""
-    with open(output_csv_path, 'w') as csvfile: 
-        writer = csv.DictWriter(csvfile, fieldnames = ["image_path", "transcript"]) 
-        writer.writeheader() 
-        writer.writerows(acceptable_images) 
-    return acceptable_images
+    write_csv(acceptable_images, output_csv_path)
 
 if __name__ == "__main__":
-    pdf_file_path = Path("/Users/tenzinchoedon/Downloads/scanned_images/འཁྱུག་ཡིག་གཤེར་དཔར།(portrait)/P000011_v001_00001 - 00500.pdf")
-    transcript_file_path = Path("/Users/tenzinchoedon/Downloads/scanned_images/transcript_csv/portrait/P000011_v001.csv")
-    image_orientation="Portrait"
-    acceptable_images = pipeline(pdf_file_path, transcript_file_path, image_orientation)
-    print(f"Number of acceptable line images: {len(acceptable_images)}")
+    pdf_file_paths = list(Path("./data/input/pdf/portrait/").iterdir())
+    transcript_dir = "./data/input/csv/"
+    image_orientation = "Portrait"
+    for pdf_file_path in pdf_file_paths:
+        file_name = ("_").join(pdf_file_path.stem.split("_")[:2])
+        transcript_file_path = Path(f"{transcript_dir}/{file_name}.csv")
+        acceptable_images = pipeline(pdf_file_path, transcript_file_path, file_name, image_orientation)
+        print(f"Number of acceptable line images: {len(acceptable_images)}")
     
